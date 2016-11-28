@@ -1,12 +1,14 @@
+<!DOCTYPE html>
 <html lang="en" >
 <head>
+	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 </head>
 <body ng-app="ExampleApp" ng-cloak>
 	<div ng-controller="pageCtrl">
 		<md-list>
-			<md-list-item ng-repeat="order in orders">
+			<md-list-item ng-repeat="order in orders track by $index">
 				<p> {{ order }} </p>
 				<md-checkbox class="md-secondary"></md-checkbox>
 			</md-list-item>
@@ -32,41 +34,33 @@
 	<!-- Your application bootstrap  -->
 	<script type="text/javascript">
 		var app = angular.module('ExampleApp', ['ngMaterial']);
-
 		app.controller("pageCtrl", function($scope, $http) {
 			/*
 			 * Modifications of this list will automatically update on the page
 			 */
 			$scope.orders = ["Bluetooth Headphones", "Christmas Gift"];
-
 			/*
 			 * Documentation https://docs.angularjs.org/api/ng/service/$http
 			 */
 			$scope.addItem = function () {
 				var data = $scope.textInput;
-
 				$http.post(window.location.href+'interface/', data);
-
 				$scope.textInput = "";
 			}
-
 			$scope.fetchItems = function () {
 				/*
 				 * Rest interface documentation for mongodb: https://docs.mongodb.com/ecosystem/tools/http-interfaces/#simple-rest-api
 				 * Remember --rest command line switch!
 				 */
-				$http.get(window.location.href+'ordersDB/orders/?filter_ordered=1').then(function(response) {
+				$http.get(window.location.href+'ordersDB/orders/?filter_ordered=true').then(function(response) {
 					// Get data
 					content = angular.fromJson(response.data);
-
 					// Prepare array for switch to avoid multiple angular digests
 					var newRows = [];
-
 					// Push content
 					content.rows.forEach(function(row) {
 						newRows.push(row.name);
 					});
-
 					// Swap content
 					$scope.orders = newRows;
 				});
